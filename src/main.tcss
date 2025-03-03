@@ -1,13 +1,9 @@
-#task_browser_VG {
-    dock: left;
+#tasks_listview {
     width: 50%;
 }
-
-#task_info_collapsible {
-    dock: right;
+#task_info_textarea {
     width: 50%;
 }
-
 .category_label {
     color: green;
     width: 25%;
@@ -21,6 +17,6 @@
 
 .task_timestamp_label {
     dock: right;
-    width: 50%;
+    width: 25%;
     text-align: right;
-}
+    }
