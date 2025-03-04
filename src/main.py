@@ -55,7 +55,7 @@ class ToDoApp(App):
         textarea = self.query_one("#task_info_textarea", TextArea)
 
 
-        textarea.load_text(self._DataManagement.get_task_desc(event.item.task_name))
+        textarea.load_text(self._DataManagement.get_task_desc(event.item.task_name)[0][0])
         textarea.refresh()
 
 
