@@ -24,6 +24,7 @@ class DataManagement():
                     id INTEGER PRIMARY KEY,
                     name text NOT NULL,
                     desc text NOT NULL,
+                    category text NOT NULL,
                     creation_date DATE
                 );
                 """
@@ -32,16 +33,16 @@ class DataManagement():
         except sqlite3.OperationalError as e:
             raise e
     
-    def add_task(self, task: tuple) -> None:
+    def add_task(self, name: str, desc: str, category: str, creation_date: str) -> None:
         # https://www.sqlitetutorial.net/sqlite-python/insert/
         try:
             cursor = self.conn.cursor()
             cursor.execute(
                 f"""
-                INSERT INTO tasks(name,desc,creation_date)
-                VALUES(?,?,?)
+                INSERT INTO tasks(name,desc,category,creation_date)
+                VALUES(?,?,?,?)
                 """,
-                task
+                (name, desc, category, creation_date)
             )
             self.conn.commit()
         
@@ -104,3 +105,4 @@ class DataManagement():
             return tuple(desc)
         except sqlite3.OperationalError as e:
             raise e
+    
