@@ -41,14 +41,21 @@ class ToDoApp(App):
             yield TextArea(id="task_info_textarea", read_only=True)        
         yield Footer()
     
-    def on_mount(self) -> None:
+    def update_view(self) -> None:
         tasks_listview = self.query_one("#tasks_listview", ListView)
+        textarea = self.query_one("#task_info_textarea", TextArea)
+
+        tasks_listview.remove_children()
+        textarea.load_text("")
 
         tasks = self._DataManagement.get_all_tasks()
         for task in tasks:
             tasks_listview.mount(TaskItem(task[1], task[2], task[3], task[4]))
-
+        
         tasks_listview.action_cursor_down()
+
+    def on_mount(self) -> None:
+        self.update_view()
 
     def on_list_view_highlighted(self, event: ListView.Highlighted):
         tasks_listview = self.query_one("#tasks_listview", ListView)
@@ -57,6 +64,12 @@ class ToDoApp(App):
 
         textarea.load_text(self._DataManagement.get_task_desc(event.item.task_name)[0][0])
         textarea.refresh()
+    
+    def on_key(self, event: events.Key) -> None:
+       if event.key == "delete":
+            task_name = self.query_one("#tasks_listview", ListView).highlighted_child.task_name
+            self._DataManagement.remove_task(task_name)
+            self.update_view()
 
 
 if __name__ == "__main__":
