@@ -1,8 +1,8 @@
 from datetime import datetime
 
 from textual.app import App, ComposeResult
-from textual.widgets import Label, Header, Footer, ListView, ListItem, TextArea
-from textual.containers import HorizontalGroup
+from textual.widgets import Label, Header, Footer, ListView, ListItem, TextArea, Button, Input, OptionList
+from textual.containers import HorizontalGroup, VerticalGroup
 from textual import events
 
 from database_parser import DataManagement
@@ -27,6 +27,30 @@ class TaskItem(ListItem):
                 classes="task_HG"
         )
 
+
+class AddWidget(VerticalGroup):
+    def __init__(self, _DataManagement, _update_view):
+        super().__init__()
+        self._DataManagement = _DataManagement
+        self._update_view = _update_view
+
+    def compose(self) -> ComposeResult:
+        yield Input(id="addwidget_task_input", placeholder="Task")
+        yield Input(id="addwidget_desc_input", placeholder="Description")
+        yield OptionList(id="category_optionlist")
+        yield Button(id="addwidget_button", label="Add Task")
+
+    def on_mount(self) -> None:
+        # self.query_one("#category_optionlist", OptionList).add_options(self._DataManagement.)
+        pass
+
+    def on_button_pressed(self):
+        self._DataManagement.add_task(str(self.query_one("#addwidget_task_input", Input).value),
+                                      str(self.query_one("#addwidget_desc_input", Input).value),
+                                      str(self.query_one("#category_optionlist", OptionList).OptionMessage),
+                                      str(datetime.now()))
+        self._update_view()
+
 class ToDoApp(App):
     CSS_PATH = "main.tcss"
 
@@ -37,7 +61,9 @@ class ToDoApp(App):
     def compose(self) -> ComposeResult:
         yield Header()
         with HorizontalGroup():
-            yield ListView(id="tasks_listview")    
+            with VerticalGroup():
+                yield ListView(id="tasks_listview")    
+                yield AddWidget(self._DataManagement, self.update_view)
             yield TextArea(id="task_info_textarea", read_only=True)        
         yield Footer()
     

@@ -1,5 +1,5 @@
 #tasks_listview {
-    width: 50%;
+    width: 100%;
 }
 #task_info_textarea {
     width: 50%;
@@ -19,4 +19,4 @@
     dock: right;
     width: 25%;
     text-align: right;
-    }
+}
