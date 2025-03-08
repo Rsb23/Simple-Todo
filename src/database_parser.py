@@ -7,7 +7,7 @@ from sqlite3 import Error
 class DataManagement():
     def __init__(self, filepath):
         self.conn = self.create_connection(filepath)
-        self.create_table()  # creates table if none exists
+        self.create_tables()
 
     def create_connection(self, filepath) -> sqlite3.Connection | ConnectionAbortedError:
         try:
@@ -15,7 +15,7 @@ class DataManagement():
         except Error as e:
             return ConnectionAbortedError(e)
     
-    def create_table(self) -> None:
+    def create_tables(self) -> None:
         try:
             cursor = self.conn.cursor()
             cursor.execute(
@@ -26,6 +26,14 @@ class DataManagement():
                     desc text NOT NULL,
                     category text NOT NULL,
                     creation_date DATE
+                );
+                """
+            )
+            cursor.execute(
+                """
+                CREATE TABLE IF NOT EXISTS categories (
+                    id INTEGER PRIMARY KEY,
+                    category_name text NOT NULL
                 );
                 """
             )
@@ -106,3 +114,43 @@ class DataManagement():
         except sqlite3.OperationalError as e:
             raise e
     
+    def add_category(self, category_name: str) -> None:
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute(
+                f"""
+                INSERT INTO categories(category_name)
+                VALUES(?)
+                """,
+                (category_name,)
+            )
+            self.conn.commit()
+        
+        except sqlite3.OperationalError as e:
+            raise e
+        
+    def remove_task(self, category_name: str) -> None:
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute(
+                """
+                DELETE FROM categories WHERE category_name = ?
+                """,
+                (category_name,)
+            )
+            self.conn.commit()
+        except sqlite3.OperationalError as e:
+            raise e
+    
+    def get_all_categories(self) -> tuple:
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute("SELECT category_name FROM categories")
+            rows = cursor.fetchall()
+
+            data = []
+            for row in rows:
+                data.append(row[0])
+            return data
+        except sqlite3.OperationalError as e:
+            raise e
